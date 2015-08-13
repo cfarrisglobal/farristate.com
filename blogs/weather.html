@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Farristate.com Home Page</title>
+
+<link rel="stylesheet" type="text/css" href="/css/Site.css">
+
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+
+<!-- jQuery library -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
+<!-- Latest compiled JavaScript -->
+<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<meta charset="utf-8">
+
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+
+<!-- Include required JS files -->
+<script type="text/javascript" src="/js/shCore.js"></script>
+ 
+<!--
+    At least one brush, here we choose JS. You need to include a brush for every 
+    language you want to highlight
+-->
+<script type="text/javascript" src="/js/shBrushSql.js"></script>
+<script type="text/javascript" src="/js/shBrushJava.js"></script>
+ 
+<!-- Include *at least* the core style and default theme -->
+<link href="/css/shCore.css" rel="stylesheet" type="text/css" />
+<link href="/css/shThemeDefault.css" rel="stylesheet" type="text/css" />
+
+<script type="text/javascript">SyntaxHighlighter.all()</script>
+
+</head>
+
+<body>
+<div class="container">
+<div id="overall">
+    <div class="row" id="top-bar">
+        <div class="col-lg-3 col-md-4 col-sm-6" id="title-sub">
+            <a href="http://farristate.com">Cody Farris</a>
+        </div>
+        <div class="col-lg-9 col-md-8 col-sm-6" id="nav">
+			<div>
+                <a href="http://farristate.com">Home</a>
+                <a href="/blog.html">Blog</a>
+                <a href="/CharlesCFarrisResumeJuly.pdf" target="_blank">Resume</a>
+			</div>
+        </div> 
+    </div>
+    
+    <div class="row">
+        <div class="col-lg-12">
+            <div id="line">
+            </div>
+        </div>
+	</div>
+    
+    <div id="blog-stubs">
+        <div class="row">
+            <div class="col-lg-3 col-md-3 col-sm-3">
+                <center><img src="/images/Icon-07.png"></center>
+            </div>
+            <div class="col-lg-7 col-md-9 col-sm-9">
+                <h1>Weather Prediction Database</h1>
+                <h5>August 11th, 2015</h5>
+                <h4>
+                <p>
+                One of my largest personal projects was the creation of a weather prediction database. 
+                I was looking to store 7 key metrics that could be used in the future to power Android 
+                and IPhone fitness based apps. The full program can be found on my GitHub 
+                <a href="https://github.com/cfarrisglobal/WeatherRun" target="_blank">here</a>. I chose the National 
+                Weather Service’s NDFD database as my source since it had a free SOAP web service.
+                </p>
+                <p>
+                In the United States there are over 43,000 zip codes and the National Weather Service 
+                maintains weather prediction data for each of them. The broad goal of this project 
+                was to gather this data and place it into a local MySQL database where it would be 
+                easier to access.
+                </p>
+                </h4>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-10 col-md-12 col-sm-12">
+                <br>
+                <h4>
+                <p>
+                Since this database was to power fitness based apps I only wanted to store weather 
+                prediction data that would affect someone exercising outside. Out of the available 
+                data I chose the following to insert into the MySQL database. 
+                </P>
+                <ul>
+                    <li>Temperature</li>
+                    <li>Rainfall</li>
+                    <li>Snowfall</li>
+                    <li>Ice Accumulation</li>
+                    <li>Humidity</li>
+                    <li>Wind Speed</li>
+                    <li>Wind Gust Speed</li>
+                </ul>
+                <p>
+                The following shows the SQL code used to create the database. While simple, the two tables 
+                provide data normalization since each zip codes latitude and longitude should be static 
+                content. Each WeatherPrediction row uses the combination of the zipcode and time_Applicable 
+                to guarantee a unique key. 
+                </p>
+                <br>
+                <pre class="brush: sql">
+                    CREATE TABLE WeatherPrediction(
+                        zipcode INT NOT NULL,
+                        time_Applicable VARCHAR(30) NOT NULL,
+                        last_Updated VARCHAR(30) NOT NULL,
+                        temp INT,
+                        liquid_Precip DOUBLE,
+                        wind_Speed INT,
+                        ice_Accum DOUBLE,
+                        snow_Amount DOUBLE,
+                        gust_Speeds INT,
+                        humidity INT,
+                        PRIMARY KEY (zipcode, time_Applicable)
+                    );
+
+                    CREATE TABLE latLon(
+                        zipcode INT NOT NULL,
+                        lattitude DOUBLE NOT NULL,
+                        longitude DOUBLE NOT NULL,
+                        PRIMARY KEY (zipcode)
+                    );
+                </pre>
+                <br>
+                <p>
+                The full Java code used to populate the database can be found 
+                <a href="https://github.com/cfarrisglobal/WeatherRun/tree/master/soap/src/soap" target="_blank">here</a>. 
+                Since it is long I will not post all of it here. Instead I’ll give some highlights of the key 
+                components that make it work. Inside the main class I had to create a thread array of 
+                WeatherRequest objects. These objects are what call the NDFD web service and then sort the 
+                returned data into the database. These objects are threaded to run in parallel since the NDFD 
+                web service can take a variable amount of time to respond to requests ranging from around .5 
+                to 5 seconds. Since the goal is to update the database each hour for all 43,000 zip codes we 
+                needed to run multiple threads.
+                </p>
+                <br>
+                <pre class="brush: java">
+                    WeatherRequest[] threadArray = new WeatherRequest[12];
+                    for(int x = 0; x < threadArray.length; x++) {
+                        threadArray[x] = new WeatherRequest(Integer.toString(x), Zips);
+                        threadArray[x].start();
+                        // Here we wait a small amount of time between starting each thread 
+                        // so that we do not bombard the NDFD servers all at once.
+                        try {
+                            TimeUnit.MILLISECONDS.sleep(50);
+                        } catch (InterruptedException e) {
+                            // Catch the interrupt
+                            e.printStackTrace();
+                        }
+                    }
+                </pre>
+                <br>
+                <p>
+                    Inside the WeatherRequest objects you have to build custom SOAP requests based on each zip 
+                    code. Java has a SOAP factory class that makes this a little easier and builds the actual 
+                    XML file that is sent to the NDFD servers. An example of the xml document the NDFD web 
+                    service returns can be found <a href="NDFDExample.xml" target="_blank">here</a>.
+                </p>
+                <br>
+                <pre class="brush: java">
+                    URL url = new URL(wsdl);
+                    QName serviceName = new QName(targetNS, "ndfdXML");
+                    QName portName = new QName(targetNS, "ndfdXMLPort");
+                    Service service = Service.create(url, serviceName);
+                    
+                    /* Example of SOAP request being built
+                     * 
+                     * NDFDgenLatLonList operation: gets weather data for a given
+                     * latitude, longitude pair
+                     * 
+                     * Format of the Message: 
+                     * <SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/" SOAP-ENV:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
+                            <SOAP-ENV:Body>
+                                <ns8077:LatLonListZipCode xmlns:ns8077="uri:DWMLgen">
+                                    <listZipCodeList xsi:type="xsd:string">25414</listZipCodeList>
+                                </ns8077:LatLonListZipCode>
+                            </SOAP-ENV:Body>
+                        </SOAP-ENV:Envelope>
+                    */
+                    
+                    SOAPFactory soapFactory = SOAPFactory.newInstance();
+                    SOAPMessage getWeatherMsg = msgFactory.createMessage();
+                    SOAPHeader header = getWeatherMsg.getSOAPHeader();
+                    header.detachNode();  // no header needed
+                    SOAPBody body = getWeatherMsg.getSOAPBody();
+                    Name functionCall = soapFactory.createName("NDFDgenLatLonList", "schNS", nsSchema);
+                    SOAPBodyElement fcElement = body.addBodyElement(functionCall);
+                    Name attname = soapFactory.createName("encodingStyle", "S", soapSchema);
+                    fcElement.addAttribute(attname, soapSchema);
+                    SOAPElement geocodeElement = fcElement.addChildElement("listLatLon");
+                    geocodeElement.addTextNode(geocodeVals);
+                    SOAPElement product = fcElement.addChildElement("product");
+                    product.addTextNode("time-series");
+                    SOAPElement weatherParameters = fcElement.addChildElement("weatherParameters");
+                    
+                    // make web service call using this SOAPMessage
+                    Dispatch<SOAPMessage> smDispatch = null;
+                    smDispatch = service.createDispatch(portName, SOAPMessage.class, Service.Mode.MESSAGE);
+                    SOAPMessage weatherMsg = smDispatch.invoke(getWeatherMsg);
+                </pre>
+                <br>
+                <p>
+                    The last part I wish to talk about is Java code responsible for inserting the weather 
+                    prediction data into the MySQL database. When doing this it is good practice to use 
+                    PreparedStatement provided in Java or something similar to protect your databases from 
+                    SQL injections. My full SQL statement used creates a new row in the database only if one 
+                    with the matching time applicable and zip code does not already exist. This way we update 
+                    old prediction data with new prediction data if it is available. In order to speed the 
+                    inserts we prepare statements in large batches that will execute at the same time.
+                </p>
+                <br>
+                <pre class="brush: java">
+                con = DriverManager.getConnection(url, user, password);
+	            st = con.createStatement();
+	            rs = st.executeQuery("SELECT VERSION()");
+
+	            // Output versionquery to check for established connection
+	            if (rs.next()) {
+	                System.out.println(rs.getString(1));
+	            }
+	            
+                /*
+	             * The following prepared statement creates a new weatherprediction row if the zipcode and time_Applicable
+	             * do not exist in the current database. If it does exists the ON DUPLICATE KEY UPDATE activates and
+	             * everything is updated with the current data except for the key which contains the zipcode and time_applicable.
+	             */
+                
+	            PreparedStatement pst = con.prepareStatement("INSERT INTO weatherprediction(zipcode, time_Applicable, last_Updated"
+	            		+ ", temp, liquid_Precip, wind_Speed, ice_Accum, snow_Amount, gust_Speeds, humidity) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?) "
+	            		+ "ON DUPLICATE KEY UPDATE zipcode = zipcode, time_Applicable = time_Applicable, last_Updated = ?, temp = ?,"
+	            		+ " liquid_Precip = ?, wind_Speed = ?, ice_Accum = ?, snow_Amount = ?, gust_Speeds = ?, humidity = ?;");
+	            
+	            //tempMasterHourPredictionIndex is a copy of masterHourPredictionIndex so that we can update
+	            //the number of predictions we have already added to the database
+	            
+	            int tempMasterHourPredictionIndex = 0;
+	            // We have to create a statement for each line in the zip file
+	            for(int x = 0; x < masterHourPrediction.size() - masterHourPredictionIndex; x++) {
+		            HourPrediction currentHourPrediction = masterHourPrediction.get((masterHourPredictionIndex + x));
+		            
+		            tempMasterHourPredictionIndex++;
+		            
+		            /*
+		             * For debugging
+		             * currentHourPrediction.printWeather();
+		             */
+		            
+		            currentHourPrediction.printWeather();
+		            
+		            // setstring sets the ? values in the preparedStatement with the data from the zips arraylist
+		            pst.setInt(1, currentHourPrediction.getZip());
+		            pst.setString(2, currentHourPrediction.getTimeApplicable());
+		            pst.setString(3, currentHourPrediction.getTimeUpdated().toString());
+		            pst.setInt(4, currentHourPrediction.getTemperature());
+		            pst.setDouble(5, currentHourPrediction.getPrecip());
+		            pst.setInt(6, currentHourPrediction.getWindSpeed());
+		            pst.setDouble(7, currentHourPrediction.getIce());
+		            pst.setDouble(8, currentHourPrediction.getSnow());
+		            pst.setInt(9, currentHourPrediction.getGust());
+		            pst.setInt(10, currentHourPrediction.getHumidity());
+		            pst.setString(11, currentHourPrediction.getTimeUpdated().toString());
+		            pst.setInt(12, currentHourPrediction.getTemperature());
+		            pst.setDouble(13, currentHourPrediction.getPrecip());
+		            pst.setInt(14, currentHourPrediction.getWindSpeed());
+		            pst.setDouble(15, currentHourPrediction.getIce());
+		            pst.setDouble(16, currentHourPrediction.getSnow());
+		            pst.setInt(17, currentHourPrediction.getGust());
+		            pst.setInt(18, currentHourPrediction.getHumidity());
+		            
+		            // we add each statement to a batch that is later executed
+		            pst.addBatch();
+		            
+		            //For debugging
+		            //System.out.println(x + " masterHourPrediction: " + masterHourPrediction.size() + " masterHourPredictionIndex: " + masterHourPredictionIndex);
+		            
+	            }
+	            
+	            //Update master index with how many predictions were just inserted
+	            masterHourPredictionIndex = masterHourPredictionIndex + tempMasterHourPredictionIndex;
+	            
+	            // Execute all batches added in the previous for loop
+	            pst.executeBatch();
+                </pre>
+                <br>
+                <br>
+                </h4>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+</body>
+
+</html>

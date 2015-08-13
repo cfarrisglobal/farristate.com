@@ -1,0 +1,241 @@
+#overall {
+    font-family: 'Roboto', sans-serif;
+    font-weight: 300;
+}
+
+#title-sub a {
+    font-size: 48px;
+    color: #333333;
+	padding-left: 10px;
+	text-decoration: none;
+}
+
+#top-bar{
+    vertical-align: bottom;
+}
+
+#nav {
+    padding-top: 35px;
+    padding-bottom: 0px;
+	text-align: right;
+    vertical-align: bottom;
+}
+
+#nav a {
+    font-size: 20px;
+    padding-right: 10px;
+    padding-left: 10px;
+	text-align: right;
+    vertical-align: bottom;
+    color: #333333;
+	text-decoration: none;
+}
+
+#nav a:hover {
+	color: #808080;
+}
+
+#line {
+    padding-top: 2px;
+    background-color: #D1D1D1;
+}
+
+#profile-Pic img {
+    display: block;
+    margin-left: 0px;
+    margin-right: 0px;
+}
+
+#about-title {
+    padding-top: 60px;
+	padding-bottom: 60px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#about-title p {
+    font-size: 17px;
+	text-align: center;
+}
+
+#photo-links img {
+    width: 100%;
+    padding-bottom: 30px;
+}
+
+#photo-links a {
+    color: #333333;
+	text-decoration: none;
+}
+
+#photo-links h3 {
+    font-size: 20px;
+}
+
+#photo-links a:hover {
+	color: #808080;
+}
+
+#contact-list {
+    padding-top: 100px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#contact-list h3{
+    padding-top: 30px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-bottom: 30px;
+}
+
+#blog-stubs img {
+    width: 100%;
+    padding-top: 30px;
+    margin-left: 0 auto;
+    margin-right: 0 auto;
+    padding-bottom: 30px;
+}
+
+#blog-stubs mark {
+    background-color: #E6E6E6;
+}
+
+#blog-stubs h1 {
+    padding-top: 30px;
+	line-height: 50%;
+}
+
+#blog-stubs h4 {
+	font-size: 16px;
+    font-weight: 300;
+    line-height: 1.5;
+}
+
+#blog-stubs h5 {
+	font-size: 12px;
+    font-weight: 300;
+}
+
+#read-more p{
+    padding-top: 0px;
+    font-weight: 300;
+}
+
+.hovereffect {
+    width: 100%;
+    height: 100%;
+    float: left;
+    overflow: hidden;
+    position: relative;
+    text-align: center;
+    cursor: default;
+}
+.hovereffect .overlay {
+    width: 100%;
+    position: absolute;
+    overflow: hidden;
+    left: 0;
+	top: auto;
+	bottom: 0;
+	padding: 1em;
+	height: 4.75em;
+	background: #c9ccdb;
+	color: #3c4a50;
+	-webkit-transition: -webkit-transform 0.35s;
+	transition: transform 0.35s;
+	-webkit-transform: translate3d(0,100%,0);
+	transform: translate3d(0,100%,0);
+}
+
+.hovereffect img {
+    display: block;
+    position: relative;
+	-webkit-transition: -webkit-transform 0.35s;
+	transition: transform 0.35s;
+}
+
+.hovereffect:hover img {
+-webkit-transform: translate3d(0,-10%,0);
+	transform: translate3d(0,-10%,0);
+}
+
+.hovereffect h2 {
+    text-align: center;
+    position: relative;
+    font-size: 20px;
+    padding: 10px;
+	margin: 0px;
+	display: inline-block;
+}
+
+.hovereffect a.info {
+    display: inline-block;
+    text-decoration: none;
+    padding: 7px 14px;
+    text-transform: uppercase;
+	color: #fff;
+	border: 1px solid #fff;
+	margin: 50px 0 0 0;
+	background-color: transparent;
+}
+
+.hovereffect a.info:hover {
+    box-shadow: 0 0 5px #fff;
+}
+
+.hovereffect p.icon-links a {
+	float: right;
+	color: #3c4a50;
+	font-size: 1.4em;
+}
+
+.hovereffect:hover p.icon-links a:hover,
+.hovereffect:hover p.icon-links a:focus {
+	color: #252d31;
+}
+
+.hovereffect h2,
+.hovereffect p.icon-links a {
+	-webkit-transition: -webkit-transform 0.35s;
+	transition: transform 0.35s;
+	-webkit-transform: translate3d(0,200%,0);
+	transform: translate3d(0,200%,0);
+}
+
+.hovereffect p.icon-links a span:before {
+	display: inline-block;
+	padding: 8px 10px;
+	speak: none;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+
+.hovereffect:hover .overlay,
+.hovereffect:hover h2,
+.hovereffect:hover p.icon-links a {
+	-webkit-transform: translate3d(0,0,0);
+	transform: translate3d(0,0,0);
+}
+
+.hovereffect:hover h2 {
+	-webkit-transition-delay: 0.05s;
+	transition-delay: 0.05s;
+}
+
+.hovereffect:hover p.icon-links a:nth-child(3) {
+	-webkit-transition-delay: 0.1s;
+	transition-delay: 0.1s;
+}
+
+.hovereffect:hover p.icon-links a:nth-child(2) {
+	-webkit-transition-delay: 0.15s;
+	transition-delay: 0.15s;
+}
+
+.hovereffect:hover p.icon-links a:first-child {
+	-webkit-transition-delay: 0.2s;
+	transition-delay: 0.2s;
+}

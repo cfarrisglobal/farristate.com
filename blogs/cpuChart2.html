@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Farristate.com Home Page</title>
+
+<link rel="stylesheet" type="text/css" href="/css/Site.css">
+
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+
+<!-- jQuery library -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
+<!-- Latest compiled JavaScript -->
+<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<meta charset="utf-8">
+
+<!-- Include required JS files -->
+<script type="text/javascript" src="/js/shCore.js"></script>
+ 
+<!--
+    At least one brush, here we choose JS. You need to include a brush for every 
+    language you want to highlight
+-->
+<script type="text/javascript" src="/js/shBrushJava.js"></script>
+
+<script type="text/javascript" src="/js/shBrushBash.js"></script>
+ 
+<!-- Include *at least* the core style and default theme -->
+<link href="/css/shCore.css" rel="stylesheet" type="text/css" />
+<link href="/css/shThemeDefault.css" rel="stylesheet" type="text/css" />
+
+</head>
+
+<body>
+<div class="container">
+<div id="overall">
+    <div class="row" id="top-bar">
+        <div class="col-lg-3 col-md-4 col-sm-6" id="title-sub">
+            <a href="http://farristate.com">Cody Farris</a>
+        </div>
+        <div class="col-lg-9 col-md-8 col-sm-6" id="nav">
+			<div>
+                <a href="http://farristate.com">Home</a>
+                <a href="/blog.html">Blog</a>
+                <a href="/CharlesCFarrisResumeJuly.pdf" target="_blank">Resume</a>
+			</div>
+        </div> 
+    </div>
+    
+    <div class="row">
+        <div class="col-lg-12">
+            <div id="line">
+            </div>
+        </div>
+	</div>
+    
+    <div id="blog-stubs">
+        <div class="row">
+            <div class="col-lg-3 col-md-3 col-sm-3">
+                <center><img src="/images/Icon-03.png"></center>
+            </div>
+            <div class="col-lg-7 col-md-9 col-sm-9">
+                <h1>CPU Usage Chart Part 2</h1>
+                <h5>July 21st, 2015</h5>
+                <h4><p>
+                In the <a href="/blogs/cpuChart.html">previous blog post</a> I went over how the front end displays a chart mapping the % CPU usage of the server running this website. Now I’ll continue by explaining the hidden side of things on the back end. The purpose of the back end is to generate <a href="http://farristate.com/WebsiteChart/myTutorials.txt" target="_blank"> this</a> text file containing the time and % CPU. There are 4 main pieces that make this work starting with the Linux command mpstat. 
+                </p>
+                <p>
+                You can type in <mark>mpstat</mark> into your linux command line and hit enter and the image below will be your result. This actually breaks down into what type of processes are keeping your processor busy. Without any arguments on your mpstat command it outputs the average since your computer last restarted. 
+                </p>
+                </h3>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-10 col-md-12 col-sm-12">
+            <img src="/images/mpstatA.PNG">
+            <h4>
+            <p>
+            The next image is the result of issuing the command <mark>mpstat 2 5</mark>. This means the server takes the average CPU usage over each 2 second period and prints it. Then it averages all the periods and prints that last. More information on the mpstat command can be found <a href="http://linuxcommand.org/man_pages/mpstat1.html" target="_blank"> here</a>.
+            </p>
+            <img src="/images/mpstatC.PNG">
+            <p>
+            Since we have the ability to tell the current CPU usage we need to now store it repeatedly. The java program calls the command <mark>mpstat 5 1</mark> and then adds its result the current text file. Read through the program’s comments if you’d like more details on how this is accomplished. 
+            </p>
+            <br>
+            <!--
+            
+                I promise I don't normally comment java like this but unfortunately it seems my syntax highlighter doesn't
+                quite like normal multi line comments. 
+            
+            -->
+            <pre class="brush: java">
+                import java.io.*;
+                import java.util.Date;
+
+                public class cpuTracker {
+                    public static void main(String[] args) throws IOException, InterruptedException
+                    {
+                        // Create process to execute mpstat 5 1 and then wait for it to execute and collect
+                        // the result in BufferReader reader. 
+                         
+                        Process p = Runtime.getRuntime().exec("mpstat 5 1");
+                        p.waitFor();
+                        BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
+
+                        // The while loop reads through each line created by the command mpstat 5 1
+                        // for which the second to last line is the one that we are interested in.
+                        
+                        String line = "";
+                        String previousLine = "";
+                        while ((line = reader.readLine())!= null) {
+                            System.out.println(line);
+                            previousLine = line;
+                        }
+                        reader.close();
+
+                        // Split the line containing our data by any whitespace. The 12th string is
+                        // the %idle that we are looking for. We then convert it to a decimal and then
+                        // manipulate it so that it has just 2 decimal points.
+
+                        String[] fromTerminal = previousLine.split("\\s+");
+                        double percentCPU = Double.parseDouble(fromTerminal[11]);
+                        percentCPU = 100 - percentCPU;
+                        percentCPU = Math.round(percentCPU * 100);
+                        percentCPU = percentCPU/100;
+
+                        // We now read the current text file stored on the Apache web server portion of
+                        // the linux server. We ignore the first line containing only a [ and then ignore 
+                        // the second line containing the oldest CPU data.
+                        // 
+                        // We store all 119 needed lines in String array keepData
+
+                        String fileName = "/var/www/html/farristate.com/Site/WebsiteChart/myTutorials.txt";
+                        String inLine = "";
+                        FileReader fileReader = new FileReader(fileName);
+                        BufferedReader txtReader = new BufferedReader(fileReader);
+
+                        //ignore first tow lines of file
+                        inLine = txtReader.readLine();
+                        inLine = txtReader.readLine();
+                        //array storing 119 lines
+                        String[] keepData = new String[119];
+                        int count = 0;
+
+                        while(((inLine = txtReader.readLine()) != null) && (count < 119)) {
+                            keepData[count] = inLine;
+                            count++;
+                        }
+                        txtReader.close();
+
+                        // The original text file is now overwritten with our new version. The [ bracket is added
+                        // to the first line and then each of the stored lines is written to the text file.
+
+                        File outFile = new File("/var/www/html/farristate.com/Site/WebsiteChart/myTutorials.txt");
+                        outFile.createNewFile();
+                        FileWriter writer = new FileWriter(outFile);
+                        
+                        writer.write("[ ");
+                        count = 0;
+                        while((count != 119) && (keepData[count] != null)) {
+                            writer.write(" \n");
+                            writer.write(keepData[count]);
+                            count++;
+                        }
+                        writer.write(", \n");
+                        
+                        // Finally we add the new data to the text file. A Date object is created and then
+                        // we get milliseconds since January 1st, 1970. The last line added is the closing bracket
+                        // of the text file.
+
+                        Date now = new Date();
+                        Long longTime = new Long(now.getTime());
+                        writer.write("    {\"time\":" + longTime + ", \"percent\":" + percentCPU + "} \n");
+                        writer.write("]");
+                        writer.close();
+                    }
+                }
+                </pre>
+                <br>
+                <p>
+                There’s one last hurdle that has to be crossed for the CPU usage text file to be continuously updated. We needed to add our Java program to the Linux cron scheduler but the built in scheduler will only run a command every minute. We want our CPU usage updated every 5 seconds but cron is not built for such frequent calls. Instead of changing the Java program to loop 12 times in a minute, which could lead to uneven updates to the CPU text file, I let cron run a short bash script every minute. This script guarantees that the java program will run every 5 seconds in the background. The & symbol at the end of the called command means that the command will be run in the background and not take time before the script sleeps for 5 seconds.  
+                </p>
+                <br>
+                <pre class="brush: bash">
+                #!/bin/bash
+                i=0
+                while [ $i –lt 12 ]; do
+                    java -cp /path/to/java/src/cpuTracker cpuTracker &
+                    sleep 5
+                    i=$(( I + 1 ))
+                done
+                </pre>
+                <br>
+                <p>
+                Thank you for following along and check back soon for more updates. I've reached a stopping point on this project for now but there are many spots that could be improved.
+                </p>
+                <br>
+                <br>
+                </h4>
+                <!-- Finally, to actually run the highlighter, you need to include this JS on your page -->
+                <script type="text/javascript">
+                     SyntaxHighlighter.all()
+                </script>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+</body>

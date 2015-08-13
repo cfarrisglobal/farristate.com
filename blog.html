@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Farristate.com Home Page</title>
+
+<link rel="stylesheet" type="text/css" href="./css/Site.css">
+
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+
+<!-- jQuery library -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
+<!-- Latest compiled JavaScript -->
+<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<meta charset="utf-8">
+
+</head>
+
+<body>
+<div class="container">
+<div id="overall">
+    <div class="row" id="top-bar">
+        <div class="col-lg-3 col-md-4 col-sm-6" id="title-sub">
+            <a href="http://farristate.com">Cody Farris</a>
+        </div>
+        <div class="col-lg-9 col-md-8 col-sm-6" id="nav">
+			<div>
+                <a href="http://farristate.com">Home</a>
+                <a href="blog.html">Blog</a>
+                <a href="CharlesCFarrisResumeJuly.pdf" target="_blank">Resume</a>
+			</div>
+        </div> 
+    </div>
+    
+    <div class="row">
+        <div class="col-lg-12">
+            <div id="line">
+            </div>
+        </div>
+	</div>
+    
+    <div id="blog-stubs">
+        <div class="row">
+            <div class="col-lg-3 col-md-3 col-sm-3">
+                <center><img src="./images/Icon-07.png"></center>
+            </div>
+            <div class="col-lg-7 col-md-9 col-sm-9">
+                <h1>Weather Prediction Database</h1>
+                <h5>August 11th, 2015</h5>
+                <h4>
+                <p>
+                One of my largest personal projects was the creation of a weather prediction database. 
+                I was looking to store 7 key metrics that could be used in the future to power Android 
+                and IPhone fitness based apps. The full program can be found on my GitHub 
+                <a href="https://github.com/cfarrisglobal/WeatherRun">here</a>. I chose the National 
+                Weather Service’s NDFD database as my source since it had a free SOAP web service.
+                </p>
+                <p>
+                In the United States there are over 43,000 zip codes and the National Weather Service 
+                maintains weather prediction data for each of them. The broad goal of this project 
+                was to gather this data and place it into a local MySQL database where it would be 
+                easier to access.
+                </p>
+                </h4>
+                <div id="read-more"><p><h3>
+                <a href="/blogs/weather.html">Read More</a>
+                </h3></p></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-3 col-md-3 col-sm-3">
+                <center><img src="./images/Icon-08.png"></center>
+            </div>
+            <div class="col-lg-7 col-md-9 col-sm-9">
+                <h1>Jeff Speck and Urban Design</h1>
+                <h5>August 3rd, 2015</h5>
+                <h4>
+                <p>
+                If you have travelled downtown or to a central neighborhood in your city recently 
+                you may have been surprised by how much construction you saw. Cities like Austin, 
+                Portland, and Denver are growing at an accelerated clip since the Great Recession 
+                ended six years ago. The suburbs are still growing and more sprawling than ever 
+                across the nation but what’s different from the 70s through 90s is that walkable 
+                neighborhoods in cities’ central cores are also growing. 
+                </p>
+                <p>
+                Jeff Speck is an Urban Designer and most people probably don’t know what an Urban 
+                Designer does. That’s not surprising because it is a very small field that doesn't 
+                get very much attention.
+                </p>
+                </h4>
+                <div id="read-more"><p><h3>
+                <a href="/blogs/walkable.html">Read More</a>
+                </h3></p></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-3 col-md-3 col-sm-3">
+                <center><img src="./images/Icon-03.png"></center>
+            </div>
+            <div class="col-lg-7 col-md-9 col-sm-9">
+                <h1>CPU Usage Chart Part 2</h1>
+                <h5>July 21st, 2015</h5>
+                <h4><p>
+                In the previous blog post I went over how the front end displays a chart mapping the % 
+                CPU usage of the server running this website. Now I’ll continue by explaining the hidden 
+                side of things on the back end. The purpose of the back end is to generate 
+                <a href="http://farristate.com/WebsiteChart/myTutorials.txt" target="_blank"> this</a> 
+                text file containing the time and % CPU. There are 4 main pieces that make this work 
+                starting with the Linux command mpstat. 
+                </p>
+                </h3>
+                <div id="read-more"><p><h3>
+                <a href="./blogs/cpuChart2.html">Read More</a>
+                </h3></p></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-3 col-md-3 col-sm-3">
+                <center><img src="./images/Icon-04.png"></center>
+            </div>
+            <div class="col-lg-7 col-md-9 col-sm-9">
+                <h1>CPU Usage Chart Part 1</h1>
+                <h5>July 17th, 2015</h5>
+                <h4><p>
+                My website's hosting server is a virtual private server deployed on Digital Ocean’s cloud. Digital Ocean has a feature for its users to be able to view their server’s CPU usage on a graph. When I first booted up a Digital Ocean server I tried a few things to get this chart to show some activity. The servers I run use the Linux operating system Ubuntu but Ubuntu by itself has a baseline CPU usage somewhere close to 0%. After I uploaded a few old Java programs that had to do some decent calculations I was finally able to move the CPU usage around a little.
+                </p>
+                <p>
+                More recently I decided to try and recreate a simpler version of this chart on my website.
+                </p>
+                </h4>
+                </h3>
+                <div id="read-more"><p><h3>
+                <a href="./blogs/cpuChart.html">Read More</a>
+                </h3></p></div>
+            </div>
+        </div>
+        <br>
+        <br>
+    </div>   
+</div>
+</div>
+</body>
+
+</html>

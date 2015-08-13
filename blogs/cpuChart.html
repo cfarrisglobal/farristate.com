@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Farristate.com Home Page</title>
+
+<link rel="stylesheet" type="text/css" href="/css/Site.css">
+
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+
+<!-- jQuery library -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
+<!-- Latest compiled JavaScript -->
+<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<meta charset="utf-8">
+
+<!-- Include required JS files -->
+<script type="text/javascript" src="/js/shCore.js"></script>
+ 
+<!--
+    At least one brush, here we choose JS. You need to include a brush for every 
+    language you want to highlight
+-->
+<script type="text/javascript" src="/js/shBrushJScript.js"></script>
+ 
+<!-- Include *at least* the core style and default theme -->
+<link href="/css/shCore.css" rel="stylesheet" type="text/css" />
+<link href="/css/shThemeDefault.css" rel="stylesheet" type="text/css" />
+
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+                
+
+<script>
+    var xmlhttp = new XMLHttpRequest();
+    var url = "/WebsiteChart/myTutorials.txt";
+    var overallArr;
+    var timeArr = [];
+
+    xmlhttp.onreadystatechange = function() {
+        if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+            var myArr = JSON.parse(xmlhttp.responseText);
+            overallArr = myArr;
+            var p;
+            for(p = 0; p < myArr.length; p++) {
+                var tempDate = new Date(overallArr[p].time);
+                timeArr[p] = tempDate;
+            }
+        }
+    }
+    xmlhttp.open("GET", url, true);
+    xmlhttp.send();
+
+    google.load('visualization', '1', {packages: ['corechart', 'line']});
+    google.setOnLoadCallback(drawBasic);
+
+    function drawBasic() {
+
+          var data = new google.visualization.DataTable();
+          data.addColumn('datetime', 'X');
+          data.addColumn('number', 'CPU 1');
+          
+          var t;
+          for(t = 0; t < timeArr.length; t++) {
+          data.addRows([
+            [timeArr[t], overallArr[t].percent]
+          ]);
+          }
+
+          var options = {
+            hAxis: {
+              title: 'Time'
+            },
+            vAxis: {
+              title: '%CPU Usage'
+            },
+            'width':1000,
+            'height':400
+          };
+
+          var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
+
+          chart.draw(data, options);
+
+    }
+</script>
+
+</head>
+
+<body>
+<div class="container">
+<div id="overall">
+    <div class="row" id="top-bar">
+        <div class="col-lg-3 col-md-4 col-sm-6" id="title-sub">
+            <a href="http://farristate.com">Cody Farris</a>
+        </div>
+        <div class="col-lg-9 col-md-8 col-sm-6" id="nav">
+			<div>
+                <a href="http://farristate.com">Home</a>
+                <a href="/blog.html">Blog</a>
+                <a href="/CharlesCFarrisResumeJuly.pdf" target="_blank">Resume</a>
+			</div>
+        </div> 
+    </div>
+    
+    <div class="row">
+        <div class="col-lg-12">
+            <div id="line">
+            </div>
+        </div>
+	</div>
+    
+    <div id="blog-stubs">
+        <div class="row">
+            <div class="col-lg-3 col-md-3 col-sm-3">
+                <center><img src="/images/Icon-04.png"></center>
+            </div>
+            <div class="col-lg-7 col-md-9 col-sm-9">
+                <h1>CPU Usage Chart Part 1</h1>
+                <h5>July 17th, 2015</h5>
+                <h4><p>
+                My website's hosting server is a virtual private server deployed on Digital Ocean’s cloud. Digital Ocean has a feature for its users to be able to view their server’s CPU usage on a graph. When I first booted up a Digital Ocean server I tried a few things to get this chart to show some activity. The servers I run use the Linux operating system Ubuntu but Ubuntu by itself has a baseline CPU usage somewhere close to 0%. After I uploaded a few old Java programs that had to do some decent calculations I was finally able to move the CPU usage around a little.
+                </p>
+                <p>
+                More recently I decided to try and recreate a simpler version of this chart on my website. This involves calculating the CPU usage every 5 seconds on the server, passing the data to a place viewable by my website, and then interpreting the data into a graph. 
+                </p>
+                </h4>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-10 col-md-12 col-sm-12">
+            
+                
+                <div id="chart_div"></div>
+                
+                <h4>
+                    <br>
+                    <p>
+                    Above is the CPU chart so far. To see the information update you will have to refresh your browser. Most likely it will be reporting a CPU usage of between 3 and 6 percent on this server’s single core over the last 10 minutes.
+                    </p>
+                    <p>
+                    After a little experimentation I went with Google Charts for the line graph. It seemed to be the most heavy duty and flexible of the free widgets available. It’s loaded in browser and powered by some JavaScript which can be found at the end of this blog. The JavaScript sources its data from a .txt file that is web accessible <a href="http://farristate.com/WebsiteChart/myTutorials.txt" target="_blank"> here</a>. The format used is a JavaScript object array so that it can be easily read by the JavaScript powering the chart. Each object is surrounded by brackets and has two variables. 
+                    </p>
+                    <br>
+                    <div style="color:blue">
+                        <p>
+                        {"time":1438818867353, "percent":6.63}
+                        </p>
+                    </div>
+                    <div>
+                    <br>
+                    <p>
+                    The time is represented by a large integer which basically means that many milliseconds have passed since January 1st, 1970. This is by far the easiest way to represent time and pass it through JavaScript but requires more calculation by the browser rendering the webpage. Other options for timestamps look something along the lines of “2011-12-03T10:15:30+01:00” but are more difficult to work with.
+                    </p>
+                    <p>
+                    Continue <a href="/blogs/cpuChart2.html"> here</a> for an explanation on how the data for this chart is generated by the Linux server.
+                    </p>
+                    <br>
+                    <br>
+                </h4>
+
+                <pre class="brush: js">
+                var xmlhttp = new XMLHttpRequest();
+                var url = "http://farristate.com/WebsiteChart/myTutorials.txt";
+                var overallArr;
+                var timeArr = [];
+                
+                xmlhttp.onreadystatechange = function() {
+                    if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+                        var myArr = JSON.parse(xmlhttp.responseText);
+                        overallArr = myArr;
+                        var p;
+                        for(p = 0; p < myArr.length; p++) {
+                            var tempDate = new Date(overallArr[p].time);
+                            timeArr[p] = tempDate;
+                        }
+                    }
+                }
+                xmlhttp.open("GET", url, true);
+                xmlhttp.send();
+                
+                google.load('visualization', '1', {packages: ['corechart', 'line']});
+                google.setOnLoadCallback(drawBasic);
+
+                function drawBasic() {
+
+                      var data = new google.visualization.DataTable();
+                      data.addColumn('datetime', 'X');
+                      data.addColumn('number', 'CPU 1');
+                      
+                      var t;
+                      for(t = 0; t < timeArr.length; t++) {
+                          data.addRows([
+                            [timeArr[t], overallArr[t].percent]
+                          ]);
+                      }
+
+                      var options = {
+                        hAxis: {
+                          title: 'Time'
+                        },
+                        vAxis: {
+                          title: '%CPU Usage'
+                        },
+                        'width':1000,
+                        'height':400
+                      };
+
+                      var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
+
+                      chart.draw(data, options);
+                
+                }
+                </pre>
+                <br>
+                <!-- Finally, to actually run the highlighter, you need to include this JS on your page -->
+                <script type="text/javascript">
+                     SyntaxHighlighter.all()
+                </script>
+                
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+</body>
+
+</html>
